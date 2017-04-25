@@ -3,7 +3,6 @@ package com.rodrigobresan.weatherapplication;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 /**
  * Created by rodrigobresan on 4/24/17.
