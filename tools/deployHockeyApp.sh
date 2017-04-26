@@ -46,7 +46,7 @@ function uploadToHockeyApp {
        --form "notify=1" \
        --form "notes=${HOCKEYAPP_NOTES}" \
        --form "notes_type=0" \
-       --form "ipa=@${HOCKEYAPP_EXPORT_APK_PATH}" \
+       --form "ipa=@${$CIRCLE_ARTIFACTS}/outputs/apk/apk-free-debug.apk" \
        --header "X-HockeyAppToken: ${HOCKEYAPP_TOKEN}" \
        "https://upload.hockeyapp.net/api/2/apps/${HOCKEYAPP_APP_ID}/app_versions/upload"
 }
