@@ -15,27 +15,15 @@ dependencies:
        - source tools/environmentSetup.sh && getAndroidSDK
 
 test:
-#  pre:
-#        # start the emulator
-#      - emulator -avd circleci-android22 -no-audio -no-window:
-#          background: true
-#          parallel: true
-#        # wait for it to have booted
-#      - circle-android wait-for-boot
   override:
     - ./gradlew test
     - ./gradlew jacocoTestReport
     - ./gradlew assembleDebug pmd findbugs
     - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
     - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
-
     - sudo apt-get install dc
     - chmod +x ./checkCoverageGoal.sh
-
     - ./checkCoverageGoal.sh
-
-    post:
-      - bash <(curl -s https://codecov.io/bash)
 
 deployment:
     development:
