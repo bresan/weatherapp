@@ -29,7 +29,7 @@ unit-tests:
 test:
   override:
     - ./gradlew assembleDebug
-    - cp -r weatherapp/build/outputs $CIRCLE_ARTIFACTS
+    - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
 
 emulator-test:
   override:
