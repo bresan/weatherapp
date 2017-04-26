@@ -8,9 +8,7 @@ general:
 
 machine:
     environment:
-        #KEYSTORE: ${HOME}/${CIRCLE_PROJECT_REPONAME/weather_release.jks
         ANDROID_HOME: /usr/local/android-sdk-linux
-        KEYSTORE_URI: <%= ENV['KEYSTORE'] %>
 
 dependencies:
     pre:
