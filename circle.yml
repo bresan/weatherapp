@@ -11,16 +11,34 @@ machine:
         ANDROID_HOME: /usr/local/android-sdk-linux
 
 dependencies:
-    pre:
-        - bash ./tools/download_keystore.sh
-        - echo y | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-25.0.2,android-25,extra-google-m2repository,extra-google-google_play_services,extra-android-support
-        - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
+#    pre:
+#        - bash ./tools/download_keystore.sh
+#        - echo y | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-25.0.2,android-25,extra-google-m2repository,extra-google-google_play_services,extra-android-support
+#        - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
+#
+#    cache_directories:
+#        - /usr/local/android-sdk-linux/tools
+#        - /usr/local/android-sdk-linux/build-tools/25.0.2
+    override:
+       - source tools/environmentSetup.sh && getAndroidSDK
 
-    cache_directories:
-        - /usr/local/android-sdk-linux/tools
-        - /usr/local/android-sdk-linux/build-tools/25.0.2
+#unit-tests:
+#  override:
+#    - ./gradlew tests
+#
+#test:
+#    override:
+#        - (./gradlew assemble):
+#            timeout: 360
 
 test:
-    override:
-        - (./gradlew assemble):
-            timeout: 360
+  pre:
+    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
+        background: true
+    - ./gradlew assembleDebug:
+        timeout: 360
+    - source tools/environmentSetup.sh && waitForAVD
+  override:
+    - ./gradlew connectedAndroidTest --info:
+        timeout: 360
+    - zip -r ~/build_output.zip app/build/outputs/

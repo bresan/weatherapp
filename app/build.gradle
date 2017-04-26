@@ -49,8 +49,7 @@ android {
 
         debug {
             applicationIdSuffix ".dev"
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), "$project.rootDir/tools/rules-proguard-debug.pro"
+            minifyEnabled false
             signingConfig signingConfigs.debug
         }
     }
