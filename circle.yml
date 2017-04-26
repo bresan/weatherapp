@@ -22,8 +22,8 @@ test:
     - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
     - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
     - sudo apt-get install dc
-    - chmod +x ./checkCoverageGoal.sh
-    - ./checkCoverageGoal.sh
+    - chmod +x tools/checkCoverageGoal.sh
+    - source tools/checkCoverageGoal.sh
 
 deployment:
     development:
