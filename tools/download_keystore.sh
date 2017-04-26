@@ -1,11 +1,7 @@
-# use curl to download a keystore from $KEYSTORE_URI, if set,
-# to the path/filename set in $KEYSTORE.
+#!/bin/bash
 
-echo "keystore: "$KEYSTORE
-echo "keystore chave:" ${KEYSTORE}
-echo "keystore uri: "$KEYSTORE_URI
-echo "keystore uri chave:" ${$KEYSTORE_URI}
-
+echo "Keystore: "$KEYSTORE
+echo "Keystore URI: "$KEYSTORE_URI
 if [[ $KEYSTORE && ${KEYSTORE} && $KEYSTORE_URI && ${KEYSTORE_URI} ]]
 then
     echo "Keystore detected - downloading..."
