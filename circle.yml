@@ -25,8 +25,10 @@ dependencies:
 unit-tests:
   override:
     - ./gradlew test
+    - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
 
-test:
+
+assembleBuild:
   override:
     - ./gradlew assembleDebug
     - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
