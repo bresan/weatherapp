@@ -26,6 +26,11 @@ unit-tests:
   override:
     - ./gradlew test
 
+test:
+  override:
+    - ./gradlew assembleDebug
+    - cp -r weatherapp/build/outputs $CIRCLE_ARTIFACTS
+
 emulator-test:
   override:
     # start the emulator
@@ -37,9 +42,9 @@ emulator-test:
     # run tests  against the emulator.
     - ./gradlew connectedAndroidTest
     # copy the build outputs to artifacts
-    - cp -r my-project/build/outputs $CIRCLE_ARTIFACTS
+    - cp -r weatherapp/build/outputs $CIRCLE_ARTIFACTS
     # copy the test results to the test results directory.
-    - cp -r my-project/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+    - cp -r weatherapp/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 #test:
 #  pre:
 #    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
