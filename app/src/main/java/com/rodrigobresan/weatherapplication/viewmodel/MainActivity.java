@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.rodrigobresan.weatherapplication.R;
-import com.rodrigobresan.weatherapplication.databinding.ActivityMainBinding;
 
 /**
  * Created by rodrigobresan on 4/24/17.
@@ -17,12 +16,10 @@ import com.rodrigobresan.weatherapplication.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding mBinding;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        DataBindingUtil.setContentView(this, R.layout.activity_main);
     }
 }
