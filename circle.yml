@@ -20,3 +20,9 @@ test:
     - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
     - ./gradlew assembleDebug pmd findbugs
     - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
+
+deployment:
+    hockey:
+    branch: dev
+    commands:
+      - source tools/deployHockeyApp.sh && uploadToHockeyApp
