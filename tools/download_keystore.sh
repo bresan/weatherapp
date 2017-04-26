@@ -11,3 +11,4 @@ then
 else
     echo "Keystore uri not set.  .APK artifact will not be signed."
 fi
+
