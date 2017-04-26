@@ -11,42 +11,47 @@ machine:
         ANDROID_HOME: /usr/local/android-sdk-linux
 
 dependencies:
-#    pre:
-#        - bash ./tools/download_keystore.sh
-#        - echo y | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-25.0.2,android-25,extra-google-m2repository,extra-google-google_play_services,extra-android-support
-#        - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
-#
-#    cache_directories:
-#        - /usr/local/android-sdk-linux/tools
-#        - /usr/local/android-sdk-linux/build-tools/25.0.2
+   cache_directories:
+       - "~/.android"
+       - "~/android"
     override:
        - source tools/environmentSetup.sh && getAndroidSDK
 
-unit-tests:
+test:
   override:
     - ./gradlew test
     - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
-
-
-assembleBuild:
-  override:
-    - ./gradlew assembleDebug
+    - ./gradlew assembleDebug pmd findbugs
     - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
+#       - emulator -avd circleci-android24 -no-window:
+#            background: true
+#            parallel: true
+#        # wait for it to have booted
+#        - circle-android wait-for-boot
+#        # run tests  against the emulator.
+#        - ./gradlew connectedAndroidTest
+#        # copy the build outputs to artifacts
+#        - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
+#        # copy the test results to the test results directory.
+#        - cp -r /home/ubuntu/weatherapp/app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 
-emulator-test:
-  override:
-    # start the emulator
-    - emulator -avd circleci-android24 -no-window:
-        background: true
-        parallel: true
-    # wait for it to have booted
-    - circle-android wait-for-boot
-    # run tests  against the emulator.
-    - ./gradlew connectedAndroidTest
-    # copy the build outputs to artifacts
-    - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
-    # copy the test results to the test results directory.
-    - cp -r /home/ubuntu/weatherapp/app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+
+
+
+#emulator-test:
+#  override:
+#    # start the emulator
+#    - emulator -avd circleci-android24 -no-window:
+#        background: true
+#        parallel: true
+#    # wait for it to have booted
+#    - circle-android wait-for-boot
+#    # run tests  against the emulator.
+#    - ./gradlew connectedAndroidTest
+#    # copy the build outputs to artifacts
+#    - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
+#    # copy the test results to the test results directory.
+#    - cp -r /home/ubuntu/weatherapp/app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 #test:
 #  pre:
 #    - $ANDROID_HOME/tools/emulator -avd testAVD -no-skin -no-audio -no-window:
