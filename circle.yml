@@ -9,20 +9,13 @@ machine:
     ADB_INSTALL_TIMEOUT: 5000
 
 dependencies:
-  pre:
+  override:
     - source tools/environmentSetup.sh && getAndroidSDK
-  post:
-    # Create the android emulator
-    - android list targets
-    - echo n | android create avd -n test_android_22 -f -t android-22
-    #  [HINT] Circle-CI already have built-in emulator (circleci-android22), but it's so heavy.
-    # Make a SD Card image file for the android emulator
-    - mksdcard -l e 256M sdcard.img
 
 test:
   pre:
     # Start the android emulator
-    - emulator -avd test_android_17 -no-audio -no-boot-anim -no-window -sdcard sdcard.img:
+    - emulator -avd circleci-android22 -no-audio -no-window:
         background: true
         parallel: true
     # Start the adb server
