@@ -29,7 +29,6 @@ dependencies:
 
 test:
   override:
-    - ./gradlew test
     - ./gradlew jacocoTestReport
     - ./gradlew assembleFreeDebug pmd findbugs -PdisablePreDex
     - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
