@@ -54,7 +54,7 @@ public class ItemWeatherViewModelTest {
         weather.celsiusTemperature = 0;
 
         WeatherViewModel weatherViewModel = new WeatherViewModel(weather);
-        assertEquals(weather.celsiusTemperature + 21, weatherViewModel.getTemperatureInCelsius(), 0);
+        assertEquals(weather.celsiusTemperature, weatherViewModel.getTemperatureInCelsius(), 0);
     }
 
     @Test
