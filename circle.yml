@@ -2,37 +2,78 @@
 # Build configuration for Circle CI
 #
 
+
+machine:
+ java:
+    version: oraclejdk8
+  environment:
+    ANDROID_HOME: /usr/local/android-sdk-linux
+    # Java options
+    JAVA_OPTS: "-Xms512m -Xmx2048m"
+     # ADB options
+    ADB_INSTALL_TIMEOUT: 5000
+
 general:
     artifacts:
         - /home/ubuntu/${CIRCLE_PROJECT_REPONAME}/app/build/outputs/apk/
 
-machine:
-    environment:
-        ANDROID_HOME: /usr/local/android-sdk-linux
-
 dependencies:
     override:
        - source tools/environmentSetup.sh && getAndroidSDK
+    post:
+       # Create the android emulator
+       - echo n | android create avd -n test_android_17 -f -t android-17
+       #  [HINT] Circle-CI already have built-in emulator (circleci-android22), but it's so heavy.
+       # Make a SD Card image file for the android emulator
+       - mksdcard -l e 128M sdcard.img
 
 test:
   pre:
-        # start the emulator
-      - emulator -avd circleci-android22 -no-audio -no-window:
+      # Start the android emulator
+      - emulator -avd test_android_17 -no-audio -no-boot-anim -no-window -sdcard sdcard.img:
           background: true
           parallel: true
-        # wait for it to have booted
-      - circle-android wait-for-boot
+      # Start the adb server
+      - fb-adb start-server:
+          background: true
   override:
-    - ./gradlew test
-    - ./gradlew jacocoTestReport
-    - ./gradlew assembleDebug pmd findbugs
-    - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
-    - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
-    - sudo apt-get install dc
-    - chmod +x tools/checkCoverageGoal.sh
-    - source tools/checkCoverageGoal.sh
-  post:
-    - bash <(curl -s https://codecov.io/bash)
+    # Generate a debug-apk
+    - ./gradlew assembleFreeDebug -PdisablePreDex
+    #  [Hint] About -PdisablePreDex, please see http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.
+    # Wait for emulator to boot
+    - circle-android wait-for-boot; sleep 5
+    # Pre-install the app (debug-apk)
+    - fb-adb install app/build/outputs/apk/app-free-debug.apk
+    # Allow the SET_ANIMATION_SCALE permission to the app
+    - fb-adb shell pm grant com.rodrigobresan.weatherapplication.dev android.permission.SET_ANIMATION_SCALE
+    # Unlock the emulator screen
+    - fb-adb shell input keyevent 82
+    # Install the app (test-apk) and Run the tests
+    - ./gradlew connectedFreeDebugAndroidTest -PdisablePreDex --stacktrace
+    # Save a screenshot to Circle-CI Artifacts
+    - fb-adb rcmd screencap -p > $CIRCLE_ARTIFACTS/screen-$(date +"%T").png
+    # Copy the generated apk files to Circle-CI Artifacts
+    - cp -r app/build/outputs/apk/ $CIRCLE_ARTIFACTS
+    # Copy the test results to Circle-CI Artifacts
+    - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+
+#        # start the emulator
+#      - emulator -avd circleci-android22 -no-audio -no-window:
+#          background: true
+#          parallel: true
+#        # wait for it to have booted
+#      - circle-android wait-for-boot
+#  override:
+#    - ./gradlew test
+#    - ./gradlew jacocoTestReport
+#    - ./gradlew assembleDebug pmd findbugs
+#    - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
+#    - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
+#    - sudo apt-get install dc
+#    - chmod +x tools/checkCoverageGoal.sh
+#    - source tools/checkCoverageGoal.sh
+#  post:
+#    - bash <(curl -s https://codecov.io/bash)
 
 deployment:
     development:
