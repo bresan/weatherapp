@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.CoreMatchers.not;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -26,7 +27,7 @@ public class MainActivityTest {
 
     @Test
     public void mainActivityTest() {
-        onView(withId(R.id.action_bar_container)).check(ViewAssertions.matches(isDisplayed()));
+        onView(withId(R.id.action_bar_container)).check(ViewAssertions.matches(not(isDisplayed())));
     }
 
 }
