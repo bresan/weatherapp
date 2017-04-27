@@ -1,58 +1,52 @@
+#
+# Build configuration for Circle CI
+#
+
+general:
+  artifacts:
+    - /home/ubuntu/Planket/app/build/outputs/apk/
+
 machine:
   java:
     version: oraclejdk8
+  python:
+    version: 2.7.10
   environment:
-    ANDROID_HOME: /usr/local/android-sdk-linux
-    # Java options
-    JAVA_OPTS: "-Xms512m -Xmx2048m"
-     # ADB options
-    ADB_INSTALL_TIMEOUT: 5000
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+    TEST_FLAGS: "--configure-on-demand -PdisablePreDex"
+    TERM: "dumb"
+    ADB_INSTALL_TIMEOUT: "10"
 
 dependencies:
-  override:
-    - source tools/environmentSetup.sh && getAndroidSDK
+  pre:
+    - if [ ! -e /usr/local/android-sdk-linux/build-tools/23.0.3 ]; then echo y | android update sdk --all --no-ui --filter "build-tools-23.0.3"; fi;
+    - if [ ! -e /usr/local/android-sdk-linux/platforms/android-23 ]; then echo y | android update sdk --all --no-ui --filter "android-23"; fi;
+    - if ! $(grep -q "Revision=44.0.0" /usr/local/android-sdk-linux/extras/android/m2repository/source.properties); then echo y | android update sdk --all --no-ui --filter "extra-android-m2repository"; fi;
+  cache_directories:
+    - /usr/local/android-sdk-linux/build-tools/23.0.3
+    - /usr/local/android-sdk-linux/platforms/android-23
+    - /usr/local/android-sdk-linux/extras/android/m2repository
 
 test:
-  pre:
-    # Start the android emulator
-    - emulator -avd circleci-android22 -no-audio -no-window:
-        background: true
-        parallel: true
-    # Start the adb server
-    - fb-adb start-server:
-        background: true
   override:
-    # Generate a debug-apk
+    - ./gradlew test
     - ./gradlew assembleFreeDebug -PdisablePreDex
-    #  [Hint] About -PdisablePreDex, please see http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.
-    # Wait for emulator to boot
-    - circle-android wait-for-boot; sleep 5
-    # Pre-install the app (debug-apk)
-    - fb-adb install app/build/outputs/apk/app-free-debug.apk
-    # Allow the SET_ANIMATION_SCALE permission to the app
-    - fb-adb shell pm grant com.rodrigobresan.weatherapplication.dev android.permission.SET_ANIMATION_SCALE
-    # Unlock the emulator screen
-    - fb-adb shell input keyevent 82
-    # Install the app (test-apk) and Run the tests
-    - ./gradlew connectedFreeDebugAndroidTest -PdisablePreDex --stacktrace
-    # Save a screenshot to Circle-CI Artifacts
-    - fb-adb rcmd screencap -p > $CIRCLE_ARTIFACTS/screen-$(date +"%T").png
-    # Copy the generated apk files to Circle-CI Artifacts
-    - cp -r app/build/outputs/apk/ $CIRCLE_ARTIFACTS
-    # Copy the test results to Circle-CI Artifacts
-    - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 
-# [HINT] The following example will upload the generated apk file to Slack and Google Drive 
-#deployment:
-#  staging:
-#    branch: /.*/ # all branch
-#    commands:
-#      - |
-#          # Make a filename of APK
-#          export apk_name="build-${CIRCLE_BRANCH}-`git rev-parse --short HEAD`.apk"
-#          # Upload the APK file to Slack
-#          curl https://slack.com/api/files.upload -F token="${SLACK_TOKEN}" -F channels="${SLACK_CHANNEL}" -F title="${apk_name}" -F filename="${apk_name}" -F file=@app/build/outputs/apk/app-debug.apk
-#          # Upload the APK file to Google Drive
-#          #  [HINT] You can get the refresh token of Google using gdrive command: https://github.com/prasmussen/gdrive
-#          curl -L -o gdrive "https://docs.google.com/uc?id=0B3X9GlR6EmbnQ0FtZmJJUXEyRTA&export=download"; chmod u+x gdrive
-#          ./gdrive --refresh-token "${GDRIVE_REFRESH_TOKEN}" upload --parent "${GDRIVE_DIR_ID}" --name "${apk_name}" app/build/outputs/apk/app-debug.apk
+deployment:
+  espresso:
+    branch: develop
+    commands:
+      - emulator -avd circleci-android22 -no-audio -no-window:
+          background: true
+          parallel: true
+      # wait for it to have booted
+      - circle-android wait-for-boot
+      # unlock the emulator screen
+      - sleep 30
+      - adb shell input keyevent 82
+      # run tests  against the emulator.
+      - ./gradlew connectedFreeDebugAndroidTest -PdisablePreDex
+      # copy the build outputs to artifacts
+      - cp -r app/build/outputs $CIRCLE_ARTIFACTS
+      # copy the test results to the test results directory.
+      - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
