@@ -34,7 +34,7 @@ test:
 
 deployment:
   espresso:
-    branch: develop
+    branch: dev
     commands:
       - emulator -avd circleci-android22 -no-audio -no-window:
           background: true
