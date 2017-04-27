@@ -38,10 +38,29 @@ public class ItemWeatherViewModelTest {
     }
 
     @Test
-    public void shouldGetWeatherDescription() {
+    public void shouldGetWeatherForHotSunnyWeather() {
         Weather weather = new Weather();
-
         weather.weatherDescriptionEnum = WeatherDescriptionEnum.HOT_SUNNY;
+
+        WeatherViewModel weatherViewModel = new WeatherViewModel(weather);
+
+        assertEquals(WEATHER_DESCRIPTION, weatherViewModel.getWeatherDescription());
+    }
+
+    @Test
+    public void shouldGetWeatherForHotCloudyWeather() {
+        Weather weather = new Weather();
+        weather.weatherDescriptionEnum = WeatherDescriptionEnum.HOT_CLOUDY;
+
+        WeatherViewModel weatherViewModel = new WeatherViewModel(weather);
+
+        assertEquals(WEATHER_DESCRIPTION, weatherViewModel.getWeatherDescription());
+    }
+
+    @Test
+    public void shouldGetWeatherForHotRainyWeather() {
+        Weather weather = new Weather();
+        weather.weatherDescriptionEnum = WeatherDescriptionEnum.HOT_RAINY;
 
         WeatherViewModel weatherViewModel = new WeatherViewModel(weather);
 
