@@ -1,10 +1,5 @@
-#
-# Build configuration for Circle CI
-#
-
-
 machine:
- java:
+  java:
     version: oraclejdk8
   environment:
     ANDROID_HOME: /usr/local/android-sdk-linux
@@ -13,29 +8,25 @@ machine:
      # ADB options
     ADB_INSTALL_TIMEOUT: 5000
 
-general:
-    artifacts:
-        - /home/ubuntu/${CIRCLE_PROJECT_REPONAME}/app/build/outputs/apk/
-
 dependencies:
-    override:
-       - source tools/environmentSetup.sh && getAndroidSDK
-    post:
-       # Create the android emulator
-       - echo n | android create avd -n test_android_17 -f -t android-17
-       #  [HINT] Circle-CI already have built-in emulator (circleci-android22), but it's so heavy.
-       # Make a SD Card image file for the android emulator
-       - mksdcard -l e 128M sdcard.img
+  pre:
+    - source tools/environmentSetup.sh && getAndroidSDK
+  post:
+    # Create the android emulator
+    - echo n | android create avd -n test_android_17 -f -t android-17
+    #  [HINT] Circle-CI already have built-in emulator (circleci-android22), but it's so heavy.
+    # Make a SD Card image file for the android emulator
+    - mksdcard -l e 128M sdcard.img
 
 test:
   pre:
-      # Start the android emulator
-      - emulator -avd test_android_17 -no-audio -no-boot-anim -no-window -sdcard sdcard.img:
-          background: true
-          parallel: true
-      # Start the adb server
-      - fb-adb start-server:
-          background: true
+    # Start the android emulator
+    - emulator -avd test_android_17 -no-audio -no-boot-anim -no-window -sdcard sdcard.img:
+        background: true
+        parallel: true
+    # Start the adb server
+    - fb-adb start-server:
+        background: true
   override:
     # Generate a debug-apk
     - ./gradlew assembleFreeDebug -PdisablePreDex
@@ -57,32 +48,17 @@ test:
     # Copy the test results to Circle-CI Artifacts
     - cp -r app/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
 
-#        # start the emulator
-#      - emulator -avd circleci-android22 -no-audio -no-window:
-#          background: true
-#          parallel: true
-#        # wait for it to have booted
-#      - circle-android wait-for-boot
-#  override:
-#    - ./gradlew test
-#    - ./gradlew jacocoTestReport
-#    - ./gradlew assembleDebug pmd findbugs
-#    - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
-#    - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
-#    - sudo apt-get install dc
-#    - chmod +x tools/checkCoverageGoal.sh
-#    - source tools/checkCoverageGoal.sh
-#  post:
-#    - bash <(curl -s https://codecov.io/bash)
-
-deployment:
-    development:
-    branch: dev
-    commands:
-      - source tools/deployHockeyApp.sh && uploadToHockeyAppDevelopment
-#
+# [HINT] The following example will upload the generated apk file to Slack and Google Drive 
 #deployment:
-#    release:
-#    branch: master
+#  staging:
+#    branch: /.*/ # all branch
 #    commands:
-#      - source tools/deployHockeyApp.sh && uploadToHockeyRelease
+#      - |
+#          # Make a filename of APK
+#          export apk_name="build-${CIRCLE_BRANCH}-`git rev-parse --short HEAD`.apk"
+#          # Upload the APK file to Slack
+#          curl https://slack.com/api/files.upload -F token="${SLACK_TOKEN}" -F channels="${SLACK_CHANNEL}" -F title="${apk_name}" -F filename="${apk_name}" -F file=@app/build/outputs/apk/app-debug.apk
+#          # Upload the APK file to Google Drive
+#          #  [HINT] You can get the refresh token of Google using gdrive command: https://github.com/prasmussen/gdrive
+#          curl -L -o gdrive "https://docs.google.com/uc?id=0B3X9GlR6EmbnQ0FtZmJJUXEyRTA&export=download"; chmod u+x gdrive
+#          ./gdrive --refresh-token "${GDRIVE_REFRESH_TOKEN}" upload --parent "${GDRIVE_DIR_ID}" --name "${apk_name}" app/build/outputs/apk/app-debug.apk
