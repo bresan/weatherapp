@@ -57,9 +57,6 @@ deployment:
       - cp -r app/build/outputs $CIRCLE_ARTIFACTS
       # copy the test results to the test results directory.
       - cp -r app/build/reports/androidTests/connected/flavors/* $CIRCLE_TEST_REPORTS
-
-
-deployment:
   hockeyapp:
     branch: dev
     commands:
