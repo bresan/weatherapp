@@ -1,4 +1,4 @@
-package com.rodrigobresan.weatherapplication.viewmodel;
+package com.rodrigobresan.weatherapplication.view;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;

@@ -7,6 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.rodrigobresan.weatherapplication.R;
+import com.rodrigobresan.weatherapplication.view.MainActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
