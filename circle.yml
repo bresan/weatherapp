@@ -31,9 +31,8 @@ test:
     - sudo apt-get install dc
     - chmod +x tools/checkCoverageGoal.sh
     - source tools/checkCoverageGoal.sh
-
     post:
-     - source <(curl -s https://codecov.io/bash)
+      - bash <(curl -s https://codecov.io/bash)
 
 deployment:
     development:
