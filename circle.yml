@@ -30,7 +30,15 @@ dependencies:
 test:
   override:
     - ./gradlew test
-    - ./gradlew assembleFreeDebug -PdisablePreDex
+    - ./gradlew jacocoTestReport
+    - ./gradlew assembleFreeDebug pmd findbugs -PdisablePreDex
+    - cp -r /home/ubuntu/weatherapp/app/build/reports/tests $CIRCLE_ARTIFACTS
+    - cp -r /home/ubuntu/weatherapp/app/build/outputs $CIRCLE_ARTIFACTS
+    - sudo apt-get install dc
+    - chmod +x tools/checkCoverageGoal.sh
+    - source tools/checkCoverageGoal.sh
+  post:
+    - bash <(curl -s https://codecov.io/bash)
 
 deployment:
   espresso:
@@ -50,3 +58,10 @@ deployment:
       - cp -r app/build/outputs $CIRCLE_ARTIFACTS
       # copy the test results to the test results directory.
       - cp -r app/build/reports/androidTests/connected/flavors/* $CIRCLE_TEST_REPORTS
+
+
+deployment:
+  hockeyapp:
+    branch: dev
+    commands:
+      - source tools/deployHockeyApp.sh && uploadToHockeyAppDevelopment
