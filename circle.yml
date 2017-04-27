@@ -33,7 +33,7 @@ test:
     - source tools/checkCoverageGoal.sh
 
     post:
-     - bash <(curl -s https://codecov.io/bash)
+     - source <(curl -s https://codecov.io/bash)
 
 deployment:
     development:
