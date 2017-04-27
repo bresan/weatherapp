@@ -36,27 +36,24 @@ test:
     - sudo apt-get install dc
     - chmod +x tools/checkCoverageGoal.sh
     - source tools/checkCoverageGoal.sh
+    - emulator -avd circleci-android22 -no-audio -no-window:
+        background: true
+        parallel: true
+    # wait for it to have booted
+    - circle-android wait-for-boot
+    # unlock the emulator screen
+    - sleep 30
+    - adb shell input keyevent 82
+    # run tests  against the emulator.
+    - ./gradlew connectedFreeDebugAndroidTest -PdisablePreDex
+    # copy the build outputs to artifacts
+    - cp -r app/build/outputs $CIRCLE_ARTIFACTS
+    # copy the test results to the test results directory.
+    - cp -r app/build/reports/androidTests/connected/flavors/* $CIRCLE_TEST_REPORTS
   post:
     - bash <(curl -s https://codecov.io/bash)
 
 deployment:
-  espresso:
-    branch: dev
-    commands:
-      - emulator -avd circleci-android22 -no-audio -no-window:
-          background: true
-          parallel: true
-      # wait for it to have booted
-      - circle-android wait-for-boot
-      # unlock the emulator screen
-      - sleep 30
-      - adb shell input keyevent 82
-      # run tests  against the emulator.
-      - ./gradlew connectedFreeDebugAndroidTest -PdisablePreDex
-      # copy the build outputs to artifacts
-      - cp -r app/build/outputs $CIRCLE_ARTIFACTS
-      # copy the test results to the test results directory.
-      - cp -r app/build/reports/androidTests/connected/flavors/* $CIRCLE_TEST_REPORTS
   hockeyapp:
     branch: dev
     commands:
