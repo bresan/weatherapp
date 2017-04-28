@@ -6,6 +6,8 @@ apply from: "$project.rootDir/tools/script-pmd.gradle"
 apply from: "$project.rootDir/tools/script-java-code-coverage.gradle"
 apply plugin: 'jacoco-android'
 
+apply plugin: 'spoon'
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
