@@ -19,7 +19,9 @@ import static org.junit.Assert.assertEquals;
 public class ItemWeatherViewModelTest {
 
     private static final String WEATHER_CITY_NAME = "Campinas";
-    private static final String WEATHER_DESCRIPTION = "Hot sunny";
+    private static final String WEATHER_DESCRIPTION_HOT_SUNNY = "Hot sunny";
+    private static final String WEATHER_DESCRIPTION_HOT_CLOUDY = "Hot cloudy";
+    private static final String WEATHER_DESCRIPTION_HOT_RAINY = "Hot rainy";
     private static final float WEATHER_CELSIUS_TEMPERATURE = 0;
     private static final float WEATHER_UMIDITY = 10;
 
@@ -44,7 +46,7 @@ public class ItemWeatherViewModelTest {
 
         WeatherViewModel weatherViewModel = new WeatherViewModel(weather);
 
-        assertEquals(WEATHER_DESCRIPTION, weatherViewModel.getWeatherDescription());
+        assertEquals(WEATHER_DESCRIPTION_HOT_SUNNY, weatherViewModel.getWeatherDescription());
     }
 
     @Test
@@ -54,7 +56,7 @@ public class ItemWeatherViewModelTest {
 
         WeatherViewModel weatherViewModel = new WeatherViewModel(weather);
 
-        assertEquals(WEATHER_DESCRIPTION, weatherViewModel.getWeatherDescription());
+        assertEquals(WEATHER_DESCRIPTION_HOT_CLOUDY =, weatherViewModel.getWeatherDescription());
     }
 
     @Test
@@ -64,7 +66,7 @@ public class ItemWeatherViewModelTest {
 
         WeatherViewModel weatherViewModel = new WeatherViewModel(weather);
 
-        assertEquals(WEATHER_DESCRIPTION, weatherViewModel.getWeatherDescription());
+        assertEquals(WEATHER_DESCRIPTION_HOT_RAINY, weatherViewModel.getWeatherDescription());
     }
 
     @Test
