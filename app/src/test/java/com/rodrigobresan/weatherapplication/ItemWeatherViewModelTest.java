@@ -56,7 +56,7 @@ public class ItemWeatherViewModelTest {
 
         WeatherViewModel weatherViewModel = new WeatherViewModel(weather);
 
-        assertEquals(WEATHER_DESCRIPTION_HOT_CLOUDY =, weatherViewModel.getWeatherDescription());
+        assertEquals(WEATHER_DESCRIPTION_HOT_CLOUDY, weatherViewModel.getWeatherDescription());
     }
 
     @Test
